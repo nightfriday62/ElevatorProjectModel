@@ -1,7 +1,7 @@
 package main;
 
 import java.util.Scanner;
-import building.Building;
+import building.BuildingModelImpl;
 
 /**
  * The driver for the elevator system.
@@ -46,7 +46,7 @@ public class MainConsole {
     Scanner scanner = new Scanner(System.in);
     scanner.nextLine();
 
-    Building building = new Building(numFloors, numElevators, numPeople);
+    BuildingModelImpl buildingModelImpl = new BuildingModelImpl(numFloors, numElevators, numPeople);
 
 
 
