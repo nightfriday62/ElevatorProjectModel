@@ -42,7 +42,8 @@ public interface BuildingModelInterface {
    * This method is used to take a step in the building's elevator system.
    *
    * @param numSteps The number of steps to take in the system.
+   * @throws IllegalArgumentException If the number of steps is less than 1.
    */
-  public void takeStep(int numSteps);
+  public void takeStep(int numSteps) throws IllegalArgumentException;
 
 }

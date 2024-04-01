@@ -5,7 +5,6 @@ import building.enums.ElevatorSystemStatus;
 import elevator.Elevator;
 import elevator.ElevatorInterface;
 import elevator.ElevatorReport;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import scanerzus.Request;
@@ -37,7 +36,7 @@ public class ControlUnit {
     this.numFloors = numFloors;
     this.numElevators = numElevators;
     this.status = ElevatorSystemStatus.running;
-    this.elevators = new ElevatorInterface[numElevators];
+    this.elevators = new Elevator[numElevators];
     this.elevatorCapacity = elevatorCapacity;
     for (int i = 0; i < numElevators; i++) {
       elevators[i] = new Elevator(numFloors, elevatorCapacity);
@@ -102,10 +101,16 @@ public class ControlUnit {
    * @param numSteps the number of steps to take
    */
   public void takeStep(int numSteps) {
+
+    this.distributeDownRequestToElevator();
+    this.distributeUpRequestToElevator();
     for (int i = 0; i < numSteps; i++) {
       for (ElevatorInterface elevator : elevators) {
         elevator.step();
       }
+    }
+    if (this.status == ElevatorSystemStatus.stopping) {
+      stopElevatorSystem();
     }
   }
 
@@ -143,6 +148,7 @@ public class ControlUnit {
    */
   public void stopElevatorSystem() {
     // Check if all the elevators are at ground floor and doors are open
+    purgePendingRequests();
     boolean allElevatorsStopped = true;
     for (ElevatorInterface elevator : elevators) {
       elevator.takeOutOfService();
@@ -181,7 +187,7 @@ public class ControlUnit {
     for (ElevatorInterface elevator : elevators) {
       LinkedList<Request> requestsToSend = null;
       if (elevator.getCurrentFloor() == 0 && elevator.isTakingRequests()) {
-        requestsToSend = new LinkedList<Request>();
+        requestsToSend = new LinkedList<>();
         for (int i = 0; i < this.elevatorCapacity; i++) {
           requestsToSend.add(upRequests.pop());
           if (upRequests.isEmpty()) {
@@ -271,5 +277,23 @@ public class ControlUnit {
    */
   public int getNumElevators() {
     return this.numElevators;
+  }
+
+  /**
+   * A getter function for the up requests.
+   *
+   * @return a list of up requests.
+   */
+  public List<Request> getUpRequests() {
+    return this.upRequests;
+  }
+
+  /**
+   * A getter function for the down requests.
+   *
+   * @return a list of down requests.
+   */
+  public List<Request> getDownRequests() {
+    return this.downRequests;
   }
 }
